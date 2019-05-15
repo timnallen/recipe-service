@@ -20,4 +20,23 @@ describe('api', () => {
       })
     });
   });
+
+  describe('Test recipes by ingredient count', () => {
+    test('should return a 200 and and array of recipes', () => {
+      return request(app).get("api/v1/recipes/ingredient_count").then(response => {
+        expect(response.statusCode).toBe(200)
+        expect(response.body.data).toBeInstanceOf(Array)
+        expect(response.body.data[0]).toBeInstanceOf(Object)
+        expect(response.body.data[0].type).toBe("recipe")
+        expect(Object.keys(response.body.data[0])).toContain("id")
+        expect(Object.keys(response.body.data[0])).toContain("attributes")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("name")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("foodType")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("ingredientCount")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("url")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("prepTime")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("calorieCount")
+      })
+    });
+  });
 });
