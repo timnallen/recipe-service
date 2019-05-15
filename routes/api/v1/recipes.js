@@ -4,12 +4,27 @@ const fetch = require('node-fetch');
 var Recipe = require("../../../models").Recipe;
 const Sequelize = require('sequelize');
 
-
 router.get("/ingredient_count", function(req, res) {
   res.setHeader("Content-Type", "application/json");
   Recipe.findAll({
     order: [
       ['ingredientCount', 'ASC']
+    ]
+  })
+    .then(recipes => {
+      let formattedRecipes = formatFastJsonRecipes(recipes);
+      res.status(200).send(JSON.stringify(formattedRecipes));
+    })
+    .catch(error => {
+      res.status(500).send({ error });
+    });
+});
+
+router.get("/prep_time", function(req, res) {
+  res.setHeader("Content-Type", "application/json");
+  Recipe.findAll({
+    order: [
+      ['prepTime', 'ASC']
     ]
   })
     .then(recipes => {
@@ -41,7 +56,6 @@ router.get("/average_calorie_count?", function(req, res) {
       } else{
         res.status(400).send(JSON.stringify({error: `There are no ${req.query.q} recipes`}))
       }
-
     })
     .catch(error => {
       res.status(500).send({error});
