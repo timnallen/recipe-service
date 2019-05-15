@@ -46,13 +46,13 @@ describe('Recipes endpoints API', () => {
 
   describe("Test average calories across recipes for a given food type", () => {
     test("should return a 200 status code and the average calories", () => {
-      return request(app).get("/api/v1/recipes/ingredient_count")
+      return request(app).get("/api/v1/recipes/average_calorie_count?q=chicken")
       .then(response => {
-        const data = response.body;
+        const data = response.body.data;
         expect(data).toHaveProperty('foodType');
         expect(data).toHaveProperty('calorieCount');
         expect(data.foodType).toBe('chicken');
-        expect(data.calorieCount).toBeCloseTo(1891.46);
+        expect(data.calorieCount).toBeCloseTo(2762);
       })
 
     })
