@@ -48,6 +48,7 @@ describe('Recipes endpoints API', () => {
     test("should return a 200 status code and the average calories", () => {
       return request(app).get("/api/v1/recipes/average_calorie_count?q=chicken")
       .then(response => {
+        expect(response.statusCode).toBe(200);
         const data = response.body.data;
         expect(data).toHaveProperty('foodType');
         expect(data).toHaveProperty('calorieCount');
@@ -55,6 +56,16 @@ describe('Recipes endpoints API', () => {
         expect(data.calorieCount).toBeCloseTo(2762);
       })
 
+    });
+    describe('When there are no recipes of that food type', () => {
+      test('should return a 400 status code and error message', () => {
+        return request(app).get("/api/v1/recipes/average_calorie_count?q=steak")
+        .then(response => {
+          expect(response.status).toBe(400)
+          expect(response.body.error).toBe("There are no steak recipes")
+        })
+
+      })
     })
   });
 });

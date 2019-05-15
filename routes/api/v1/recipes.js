@@ -39,7 +39,7 @@ router.get("/average_calorie_count?", function(req, res) {
             }
           }))
       } else{
-        res.status(400).send(JSON.stringify({error: `No recipes with ${req.query.q} found in database.`}))
+        res.status(400).send(JSON.stringify({error: `There are no ${req.query.q} recipes`}))
       }
 
     })
