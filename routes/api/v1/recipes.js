@@ -45,6 +45,26 @@ router.get("/average_calorie_count?", function(req, res) {
     .catch(error => {
       res.status(500).send({error});
     })
+});
+
+router.get("/food_search", function(req, res) {
+  res.setHeader("Content-Type", "application/json");
+    Recipe.findAll({
+      where: {
+        foodType: req.query.q
+      }
+    })
+      .then(recipes => {
+        if(recipes.length === 0) {
+          console.log("Fetch here")
+        } else{
+          res.status(200).send(JSON.stringify(formatFastJsonRecipes(recipes)));
+        }
+
+      })
+      .catch(error => {
+        res.status(500).send({error})
+      })
 })
 
 function formatFastJsonRecipes(recipes) {
