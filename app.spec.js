@@ -4,7 +4,7 @@ var app = require('./app');
 
 describe('api', () => {
   beforeAll(() => {
-    // shell.exec('npx sequelize db:create')
+    shell.exec('npx sequelize db:create')
     shell.exec('npx sequelize db:migrate')
     shell.exec('npx sequelize db:seed:all')
   });
