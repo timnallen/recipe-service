@@ -15,7 +15,8 @@
     "pg": "^7.10.0",
     "pryjs": "^1.0.3",
     "sequelize": "^5.8.5",
-    "sequelize-cli": "^5.4.0"
+    "sequelize-cli": "^5.4.0",
+    "node-fetch": "^2.5.0"
   },
   "devDependencies": {
     "babel-jest": "^24.8.0",

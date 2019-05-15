@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const fetch = require('node-fetch');
 var Recipe = require("../../../models").Recipe;
 const Sequelize = require('sequelize');
 
@@ -45,7 +46,65 @@ router.get("/average_calorie_count?", function(req, res) {
     .catch(error => {
       res.status(500).send({error});
     })
+});
+
+router.get("/food_search", function(req, res) {
+  res.setHeader("Content-Type", "application/json");
+    Recipe.findAll({
+      where: {
+        foodType: req.query.q
+      }
+    })
+      .then(recipes => {
+        if(recipes.length === 0) {
+          fetch(`https://api.edamam.com/search?q=${req.query.q}&app_id=${process.env.APP_ID}&app_key=${process.env.APP_KEY}`)
+            .then(data => data.json())
+            .then(recipes => {
+              if(recipes.hits.length == 0) {
+                res.status(400).send(JSON.stringify({error:`No results were returned for ${req.query.q}, check if query is valid.`}))
+              } else{
+
+              let newRecipes = formatEdamamRecipes(recipes)
+              Recipe.bulkCreate(newRecipes, {returning: true})
+                .then(response => {
+                  res.status(200).send(JSON.stringify(formatFastJsonRecipes(response)));
+
+                })
+                .catch(error => {
+                  res.status(500).send({error})
+                })
+              }
+
+            })
+            .catch(error => {
+              res.status(500).send({error})
+            })
+        } else{
+          res.status(200).send(JSON.stringify(formatFastJsonRecipes(recipes)));
+        }
+
+      })
+      .catch(error => {
+        res.status(500).send({error})
+      })
 })
+
+function formatEdamamRecipes(response) {
+  var formattedRecipes = [];
+
+  for (i = 0; i<response.hits.length; i++) {
+    let newRecipe = {
+      name: response.hits[i].recipe.label,
+      foodType: response.q,
+      calorieCount: parseInt(response.hits[i].recipe.calories),
+      prepTime: response.hits[i].recipe.totalTime,
+      url: response.hits[i].recipe.url,
+      ingredientCount: response.hits[i].recipe.ingredients.length
+    }
+    formattedRecipes.push(newRecipe);
+  }
+  return formattedRecipes;
+}
 
 function formatFastJsonRecipes(recipes) {
   var formattedRecipes = [];
