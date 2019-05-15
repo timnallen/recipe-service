@@ -1,0 +1,41 @@
+var express = require("express");
+var router = express.Router();
+var Recipe = require("../../../models").Recipe;
+
+router.get("/ingredient_count", function(req, res) {
+  res.setHeader("Content-Type", "application/json");
+  Recipe.findAll({
+    order: [
+      ['ingredientCount', 'ASC']
+    ]
+  })
+    .then(recipes => {
+      let formattedRecipes = formatFastJsonRecipes(recipes);
+      res.status(200).send(JSON.stringify(formattedRecipes));
+    })
+    .catch(error => {
+      res.status(500).send({ error });
+    });
+});
+
+function formatFastJsonRecipes(recipes) {
+  var formattedRecipes = [];
+  for (let counter = 0; counter < recipes.length; counter++) {
+    let newRecipe = {
+      id: recipes[counter].id,
+      type: "recipe",
+      attributes: {
+        name: recipes[counter].name,
+        url: recipes[counter].url,
+        foodType: recipes[counter].foodType,
+        ingredientCount: recipes[counter].ingredientCount,
+        calorieCount: recipes[counter].calorieCount,
+        prepTime: recipes[counter].prepTime,
+      }
+    }
+    formattedRecipes.push(newRecipe);
+  }
+  return {data: formattedRecipes}
+};
+
+module.exports = router;
