@@ -30,7 +30,6 @@ router.get("/average_calorie_count?", function(req, res) {
     raw: true
   })
     .then(result => {
-      console.log(result)
       if(result[0].averageCalorieCount) {
         res.status(200).send(JSON.stringify({
             data: {
