@@ -26,15 +26,22 @@ router.get("/average_calorie_count?", function(req, res) {
     where: {
       foodType: req.query.q
     },
-    attributes: [[Sequelize.fn('AVG', Sequelize.col('calorieCount')), 'averageCalorieCount']]
+    attributes: [[Sequelize.fn('AVG', Sequelize.col('calorieCount')), 'averageCalorieCount']],
+    raw: true
   })
     .then(result => {
-      res.status(200).send(JSON.stringify({
-          data: {
-            foodType: req.query.q,
-            calorieCount: parseInt(result[0].dataValues.averageCalorieCount)
-          }
-        }))
+      console.log(result)
+      if(result[0].averageCalorieCount) {
+        res.status(200).send(JSON.stringify({
+            data: {
+              foodType: req.query.q,
+              calorieCount: parseInt(result[0].averageCalorieCount)
+            }
+          }))
+      } else{
+        res.status(400).send(JSON.stringify({error: `No recipes with ${req.query.q} found in database.`}))
+      }
+
     })
     .catch(error => {
       res.status(500).send({error});
