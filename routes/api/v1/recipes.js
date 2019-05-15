@@ -57,7 +57,6 @@ router.get("/food_search", function(req, res) {
     })
       .then(recipes => {
         if(recipes.length === 0) {
-          console.log("Fetch here")
           fetch(`https://api.edamam.com/search?q=${req.query.q}&app_id=${process.env.APP_ID}&app_key=${process.env.APP_KEY}`)
             .then(data => data.json())
             .then(recipes => {
