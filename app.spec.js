@@ -44,6 +44,29 @@ describe('Recipes endpoints API', () => {
     });
   });
 
+  describe('Test recipes by prepTime', () => {
+    test('should return a 200 and and array of recipes in the correct order', () => {
+      return request(app).get("/api/v1/recipes/prep_time").then(response => {
+        expect(response.statusCode).toBe(200)
+        expect(response.body.data).toBeInstanceOf(Array)
+        expect(response.body.data[0]).toBeInstanceOf(Object)
+        expect(response.body.data[0].type).toBe("recipe")
+        expect(Object.keys(response.body.data[0])).toContain("id")
+        expect(Object.keys(response.body.data[0])).toContain("attributes")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("name")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("foodType")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("ingredientCount")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("url")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("prepTime")
+        expect(Object.keys(response.body.data[0].attributes)).toContain("calorieCount")
+        expect(response.body.data[0].attributes.prepTime).toBeLessThanOrEqual(response.body.data[1].attributes.prepTime)
+        expect(response.body.data[1].attributes.prepTime).toBeLessThanOrEqual(response.body.data[2].attributes.prepTime)
+        expect(response.body.data[2].attributes.prepTime).toBeLessThanOrEqual(response.body.data[3].attributes.prepTime)
+        expect(response.body.data[3].attributes.prepTime).toBeLessThanOrEqual(response.body.data[4].attributes.prepTime)
+      })
+    });
+  });
+
   describe("Test average calories across recipes for a given food type", () => {
     test("should return a 200 status code and the average calories", () => {
       return request(app).get("/api/v1/recipes/average_calorie_count?q=chicken")
